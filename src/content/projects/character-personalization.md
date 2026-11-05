@@ -2,7 +2,7 @@
 title: "Character Personalization System"
 category: "WORK IN PROGRESS · GAME ENGINE"
 period: "In progress"
-order: 6
+order: 7
 summary: "A data-driven Unreal Engine plugin for scalable, persistent character appearances."
 role: "System design & development"
 focus: "Unreal Engine 5 / Character systems / C++"

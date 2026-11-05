@@ -2,7 +2,7 @@
 title: "Real-Time 3D Graphics"
 category: "PROJECT · REAL-TIME GRAPHICS"
 period: "2022"
-order: 5
+order: 6
 summary: "An exploration of the real-time rendering pipeline through OpenGL and GLSL."
 role: "Graphics programming"
 focus: "OpenGL / GLSL / Real-time rendering"

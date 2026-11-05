@@ -2,7 +2,7 @@
 title: "Depth of Field Through Multi-Sample Ray Tracing"
 category: "RESEARCH · RAY TRACING"
 period: "2023—2024"
-order: 3
+order: 5
 summary: "A WebGL rendering experiment exploring focus, refraction and depth of field."
 role: "Researcher & developer"
 focus: "WebGL / Ray tracing / Optics"

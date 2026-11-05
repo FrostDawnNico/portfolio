@@ -2,7 +2,7 @@
 title: "Atmosphere Rendering & Optimization"
 category: "WORK IN PROGRESS · REAL-TIME RENDERING"
 period: "In progress"
-order: 7
+order: 2
 summary: "Investigating atmospheric visuals and GPU cost through controlled Unreal Engine experiments."
 role: "Graphics investigation & optimization"
 focus: "Unreal Engine 5 / Volumetrics / GPU profiling"

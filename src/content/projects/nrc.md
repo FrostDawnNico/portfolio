@@ -2,7 +2,7 @@
 title: "Neural Radiance Caching in Falcor"
 category: "RESEARCH · PATH TRACING"
 period: "2024"
-order: 2
+order: 4
 summary: "An implementation of neural radiance caching for a path-tracing renderer built on Falcor."
 role: "Graphics research & implementation"
 focus: "Falcor / Path tracing / Neural rendering"

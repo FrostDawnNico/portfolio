@@ -2,13 +2,15 @@
 title: "Battle Cap"
 category: "GAME DEVELOPMENT · TECHNICAL ART"
 period: "2023—2024"
-order: 4
+order: 3
 summary: "Technical art for a multiplayer party game about transforming bottle-cap battleships."
 role: "Technical art intern · Team project"
 focus: "Game development / Technical art"
 lead: "Bringing playful visual ideas into a working game."
-cover: null
-coverAlt: ""
+cover: "images/battle/cover.jpg"
+coverAlt: "Battle Cap illustrated cover art"
+heroCover: "images/battle/hero.jpg"
+heroAlt: "Battle Cap boats racing through a naval battle"
 credits: "A collaborative game by MechAlmond Productions. The game and official video represent the team’s collective work."
 draft: false
 links: [{"label":"Watch official gameplay","url":"https://www.bilibili.com/video/BV1BRKoeMExG/"}]
@@ -29,3 +31,4 @@ The work connected visual direction with practical implementation, translating s
 ## Outcome
 
 Battle Cap is a released team project. It received the Silver Award in the industry track of Tencent’s 2024 Global Game Competition, as noted in the supplied CV.
+

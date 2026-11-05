@@ -1,0 +1,85 @@
+---
+import Base from '../layouts/Base.astro';
+import {getCollection} from 'astro:content';
+const projects = (await getCollection('projects', ({data})=>!data.draft)).sort((a,b)=>a.data.order-b.data.order);
+const base=(import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : import.meta.env.BASE_URL + '/');
+---
+<Base><section class="hero"><div class="hero-copy"><p class="kicker">INDEPENDENT PORTFOLIO / ZHENKAI ZHONG</p><h1 class="hero-title"><span class="title-first">Where light</span><span class="title-second"><em>meets</em> logic<span class="title-dot">.</span></span></h1><p class="intro">Exploring the space between computer graphics, real-time rendering and game development.</p><a class="cta" href="#work">Explore the work <span>↘</span></a></div><div class="field"><div class="hypercube-control" tabindex="0" role="group" aria-label="Interactive tesseract. Drag to rotate or use the arrow keys."><canvas id="light-field" aria-hidden="true"></canvas><svg class="field-fallback" viewBox="0 0 320 320" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.3"><path d="M38 74 L194 38 L282 106 L126 143 Z M38 74 L38 226 L126 282 L126 143 M282 106 L282 228 L126 282 M194 38 L194 183 L282 228 M38 226 L194 183"/><path d="M91 105 L183 84 L235 124 L143 145 Z M91 105 L91 197 L143 230 L143 145 M235 124 L235 198 L143 230 M183 84 L183 173 L235 198 M91 197 L183 173 M38 74 L91 105 M194 38 L183 84 M282 106 L235 124 M126 143 L143 145 M38 226 L91 197 M194 183 L183 173 M282 228 L235 198 M126 282 L143 230"/></g></svg></div><div class="field-label"><span>INTERACTIVE STUDY / TESSERACT</span><span>DRAG TO ROTATE ↗</span></div></div><div class="hero-index">GRAPHICS RESEARCH <span>✳</span> REAL-TIME RENDERING <span>✳</span> GAME DEVELOPMENT</div></section><section class="section work" id="work"><div class="section-header"><div><p class="kicker">01 / SELECTED WORK</p><h2>Experiments<br/><em>made visible.</em></h2></div><p>Research, rendering and game projects. Each one is a different way of thinking through an image.</p></div><div class="project-list">{projects.map((project)=><a class="project" href={`${base}projects/${project.id}/`}><div class="project-visual">{project.data.cover ? <img src={`${base}${project.data.cover}`} alt={project.data.coverAlt} loading="lazy"/> : <div class="project-placeholder"><span>PLAY / BUILD / ITERATE</span><strong>BATTLE<br/>CAP.</strong></div>}<span class="project-number">{String(project.data.order).padStart(2,'0')}</span></div><div class="project-info"><p class="kicker">{project.data.category} <span>{project.data.period}</span></p><h3>{project.data.title}</h3><p>{project.data.summary}</p><div class="project-bottom">{project.data.role}<span>EXPLORE ↗</span></div></div></a>)}</div></section><section class="about section" id="about"><div><p class="kicker">02 / ABOUT</p><h2>Curious about<br/><em>what’s possible.</em></h2></div><div><p>I’m Zhenkai, a graphics researcher and developer interested in how rendering, perception, and game technology come together to create compelling experiences.</p><p>I earned a B.Eng. in Information Security from Shanghai Jiao Tong University. My experience spans graphics research, technical art for games, and engineering work including cloud rendering.</p><p class="skills">C++ / Python / Unreal Engine / OpenGL / WebGL / Vulkan / DirectX 12 / Unity</p><div class="about-links"><a href="mailto:nicozhongzk@gmail.com">nicozhongzk@gmail.com ↗</a><a href="https://github.com/FrostDawnNico">GitHub ↗</a></div></div></section></Base>
+<script>
+const canvas = document.querySelector('#light-field');
+const control = document.querySelector('.hypercube-control');
+if (canvas instanceof HTMLCanvasElement && control instanceof HTMLElement) {
+  const ctx = canvas.getContext('2d');
+  if (ctx) {
+    const points: number[][] = Array.from({length: 16}, (_, i) => [0,1,2,3].map(bit => (i & (1 << bit)) ? 1 : -1));
+    const edges: Array<[number, number, number]> = [];
+    for (let i = 0; i < 16; i++) for (let axis = 0; axis < 4; axis++) {
+      const next = i ^ (1 << axis);
+      if (i < next) edges.push([i, next, axis]);
+    }
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+    let width = 0, height = 0, frame = 0, visible = true;
+    let yaw = .48, pitch = -.35, phase = .35, lastTime = 0;
+    let dragging = false, lastX = 0, lastY = 0;
+    const rotate = (a: number, b: number, angle: number) => [a * Math.cos(angle) - b * Math.sin(angle), a * Math.sin(angle) + b * Math.cos(angle)];
+    const resize = () => {
+      const scale = Math.min(devicePixelRatio || 1, 2);
+      width = control.clientWidth; height = control.clientHeight;
+      canvas.width = Math.round(width * scale); canvas.height = Math.round(height * scale);
+      ctx.setTransform(scale, 0, 0, scale, 0, 0);
+      render();
+    };
+    const render = () => {
+      ctx.clearRect(0, 0, width, height);
+      const size = Math.min(width, height) * .24;
+      const projected = points.map(point => {
+        let [x,y,z,w] = point;
+        [x,w] = rotate(x,w,phase);
+        [y,w] = rotate(y,w,phase * .57 + .25);
+        const perspective4 = 3.8 / (3.8 - w * .55);
+        x *= perspective4; y *= perspective4; z *= perspective4;
+        [x,z] = rotate(x,z,yaw);
+        [y,z] = rotate(y,z,pitch);
+        const perspective3 = 4.8 / (4.8 - z * .55);
+        return {x: width*.5 + x*size*perspective3, y: height*.49 + y*size*perspective3, z};
+      });
+      const ordered = edges.map(([a,b,axis]) => ({a:projected[a], b:projected[b], axis})).sort((a,b) => (a.a.z+a.b.z)-(b.a.z+b.b.z));
+      for (const edge of ordered) {
+        const depth = Math.max(0, Math.min(1, ((edge.a.z + edge.b.z) / 2 + 2) / 4));
+        ctx.beginPath(); ctx.moveTo(edge.a.x,edge.a.y); ctx.lineTo(edge.b.x,edge.b.y);
+        ctx.strokeStyle = edge.axis === 3 ? `rgba(185, 151, 45, ${.30 + depth*.35})` : `rgba(37, 126, 112, ${.24 + depth*.46})`;
+        ctx.lineWidth = .85 + depth*.75; ctx.stroke();
+      }
+      for (const p of projected) {
+        ctx.beginPath(); ctx.arc(p.x,p.y,2.1,0,Math.PI*2); ctx.fillStyle = 'rgba(48, 133, 109, .72)'; ctx.fill();
+      }
+    };
+    const tick = (time: number) => {
+      frame = 0;
+      if (!visible || reduced.matches) {lastTime = 0; return;}
+      if (lastTime) {const dt = Math.min((time-lastTime)/1000,.05); phase += dt*.23; if (!dragging) yaw += dt*.10;}
+      lastTime = time; render(); frame = requestAnimationFrame(tick);
+    };
+    const start = () => {if (!frame && visible && !reduced.matches) frame = requestAnimationFrame(tick);};
+    control.addEventListener('pointerdown', event => {
+      if (event.button !== 0) return;
+      dragging = true; lastX = event.clientX; lastY = event.clientY; control.setPointerCapture(event.pointerId); control.classList.add('dragging');
+    });
+    control.addEventListener('pointermove', event => {
+      if (!dragging) return;
+      yaw += (event.clientX-lastX)*.01; pitch += (event.clientY-lastY)*.01;
+      lastX = event.clientX; lastY = event.clientY; render();
+    });
+    const stop = () => {dragging = false; control.classList.remove('dragging');};
+    control.addEventListener('pointerup', stop); control.addEventListener('pointercancel', stop); control.addEventListener('lostpointercapture', stop);
+    control.addEventListener('keydown', event => {
+      const moves: Record<string,[number,number]> = {ArrowLeft:[-.15,0],ArrowRight:[.15,0],ArrowUp:[0,-.15],ArrowDown:[0,.15]};
+      if (moves[event.key]) {event.preventDefault(); yaw += moves[event.key][0]; pitch += moves[event.key][1]; render();}
+    });
+    const observer = new IntersectionObserver(entries => {visible = entries[0].isIntersecting; if (!visible) {cancelAnimationFrame(frame); frame = 0; lastTime = 0;} else start();});
+    reduced.addEventListener('change', () => {cancelAnimationFrame(frame); frame = 0; lastTime = 0; render(); start();});
+    window.addEventListener('resize', resize); resize(); control.classList.add('active'); observer.observe(control); start();
+  }
+}
+</script>
+

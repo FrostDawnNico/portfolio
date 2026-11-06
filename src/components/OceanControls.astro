@@ -1,0 +1,18 @@
+---
+const controls = [
+  { id:'height', label:'Wave height', short:'HEIGHT', min:0.2, max:0.9, step:0.01, value:0.6 },
+  { id:'speed', label:'Wave speed', short:'SPEED', min:0, max:1.6, step:0.02, value:0.8 },
+  { id:'choppy', label:'Wave sharpness', short:'SHARPNESS', min:1, max:6, step:0.05, value:4 },
+  { id:'frequency', label:'Wave density', short:'DENSITY', min:0.08, max:0.28, step:0.005, value:0.16 },
+];
+---
+<section class="ocean-controls" aria-label="Ocean controls">
+  <div class="ocean-controls-head"><div><span class="ocean-eyebrow">INTERACTIVE STUDY / 02</span><h2>Shape the sea<span>.</span></h2></div><button class="ocean-reset" type="button" disabled>RESET ↺</button></div>
+  <div class="ocean-dials">
+    {controls.map(({id,label,short,min,max,step,value}) => <label class="ocean-dial" for={`ocean-${id}`}>
+      <span class="dial-face" style={`--dial-angle:${-135+270*(value-min)/(max-min)}deg`}><span class="dial-pointer"></span><input id={`ocean-${id}`} data-ocean-control={id} type="range" min={min} max={max} step={step} value={value} aria-label={label} disabled /></span>
+      <span class="dial-label">{short}</span><output for={`ocean-${id}`}>{value.toFixed(id === 'frequency' ? 3 : 2)}</output>
+    </label>)}
+  </div>
+  <p class="ocean-hint" aria-live="polite">Preparing ocean controls…</p>
+</section>

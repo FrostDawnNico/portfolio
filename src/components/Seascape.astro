@@ -1,0 +1,84 @@
+<div class="seascape" aria-hidden="true"><canvas id="seascape-canvas"></canvas></div>
+<script>
+import fragmentSource from '../seascape.glsl?raw';
+
+const canvas = document.querySelector<HTMLCanvasElement>('#seascape-canvas');
+const controls = Array.from(document.querySelectorAll<HTMLInputElement>('[data-ocean-control]'));
+const reset = document.querySelector<HTMLButtonElement>('.ocean-reset');
+const hint = document.querySelector<HTMLElement>('.ocean-hint');
+const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+const defaults: Record<string, number> = {height:0.6, speed:0.8, choppy:4, frequency:0.16};
+const state = {...defaults};
+const setAvailable = (available: boolean) => {
+  controls.forEach(input => { input.disabled = !available; });
+  if (reset) reset.disabled = !available;
+  if (hint) hint.textContent = available ? 'DRAG TO ADJUST · ARROW KEYS TO FINE-TUNE' : 'Ocean controls unavailable on this browser.';
+};
+const reflect = (input: HTMLInputElement) => {
+  const min = Number(input.min), max = Number(input.max), value = Number(input.value);
+  const face = input.closest<HTMLElement>('.dial-face');
+  face?.style.setProperty('--dial-angle', `${-135 + 270 * (value-min)/(max-min)}deg`);
+  const output = input.closest('.ocean-dial')?.querySelector('output');
+  if (output) output.textContent = value.toFixed(input.dataset.oceanControl === 'frequency' ? 3 : 2);
+};
+setAvailable(false);
+if (canvas) {
+  const gl = canvas.getContext('webgl', { alpha:false, antialias:false, powerPreference:'low-power' });
+  if (gl) {
+    const compile = (type: number, source: string) => {
+      const shader = gl.createShader(type);
+      if (!shader) return null;
+      gl.shaderSource(shader, source); gl.compileShader(shader);
+      if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) { console.error('Seascape shader:', gl.getShaderInfoLog(shader)); gl.deleteShader(shader); return null; }
+      return shader;
+    };
+    const vertex = compile(gl.VERTEX_SHADER, 'attribute vec2 position; void main(){gl_Position=vec4(position,0.0,1.0);}');
+    const fragment = compile(gl.FRAGMENT_SHADER, fragmentSource);
+    const program = gl.createProgram();
+    if (vertex && fragment && program) {
+      gl.attachShader(program, vertex); gl.attachShader(program, fragment); gl.linkProgram(program);
+      if (gl.getProgramParameter(program, gl.LINK_STATUS)) {
+        gl.useProgram(program);
+        const buffer = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,1,-1,-1,1,-1,1,1,-1,1,1]), gl.STATIC_DRAW);
+        const position = gl.getAttribLocation(program, 'position'); gl.enableVertexAttribArray(position); gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0);
+        const uniforms = Object.fromEntries(['iResolution','iGlobalTime','uWaveHeight','uWaveChoppy','uWaveFrequency','uWavePhase','uCameraHeight'].map(name => [name, gl.getUniformLocation(program, name)]));
+        let frame = 0, last = 0, elapsed = 0, phase = 0, lost = false;
+        const render = () => {
+          const scale = Math.min(window.devicePixelRatio || 1, innerWidth < 768 ? 0.65 : 1);
+          const width = Math.max(1, Math.floor(innerWidth*scale)), height = Math.max(1, Math.floor(innerHeight*scale));
+          if (canvas.width !== width || canvas.height !== height) { canvas.width = width; canvas.height = height; gl.viewport(0,0,width,height); }
+          const scrollable = Math.max(0, document.documentElement.scrollHeight - innerHeight);
+          const progress = scrollable ? Math.min(1, Math.max(0, window.scrollY / scrollable)) : 0;
+          // The independent wave field is bounded by 1.55 times its height.
+          const minimumCamera = 1.55 * state.height + 0.25;
+          const camera = 3.5 + (minimumCamera - 3.5) * progress;
+          gl.uniform2f(uniforms.iResolution, width, height); gl.uniform1f(uniforms.iGlobalTime, elapsed);
+          gl.uniform1f(uniforms.uWaveHeight, state.height); gl.uniform1f(uniforms.uWaveChoppy, state.choppy);
+          gl.uniform1f(uniforms.uWaveFrequency, state.frequency); gl.uniform1f(uniforms.uWavePhase, phase); gl.uniform1f(uniforms.uCameraHeight, camera);
+          gl.drawArrays(gl.TRIANGLES, 0, 6); canvas.classList.add('ready');
+        };
+        const tick = (now: number) => {
+          frame = 0;
+          if (document.hidden || reduced.matches || lost) { last = 0; return; }
+          if (!last || now-last >= 1000/30) { if (last) { const dt = Math.min((now-last)/1000, 0.1); elapsed += dt; phase += dt*state.speed; } last = now; render(); }
+          frame = requestAnimationFrame(tick);
+        };
+        const update = () => { cancelAnimationFrame(frame); frame = 0; last = 0; if (!lost) { render(); if (!reduced.matches && !document.hidden) frame = requestAnimationFrame(tick); } };
+        controls.forEach(input => {
+          input.addEventListener('input', () => { const key = input.dataset.oceanControl; if (key) state[key] = Number(input.value); reflect(input); if (!lost) render(); });
+          let startY = 0, startValue = 0;
+          input.addEventListener('pointerdown', event => { if (event.button !== 0 || input.disabled) return; event.preventDefault(); input.focus(); startY = event.clientY; startValue = Number(input.value); input.setPointerCapture(event.pointerId); });
+          input.addEventListener('pointermove', event => { if (!input.hasPointerCapture(event.pointerId)) return; const min = Number(input.min), max = Number(input.max), step = Number(input.step); const raw = startValue + (startY-event.clientY)*(max-min)/140; input.value = String(Math.min(max, Math.max(min, min + Math.round((raw-min)/step)*step))); input.dispatchEvent(new Event('input', {bubbles:true})); });
+        });
+        reset?.addEventListener('click', () => { controls.forEach(input => { const key = input.dataset.oceanControl; if (key) { state[key] = defaults[key]; input.value = String(defaults[key]); reflect(input); } }); if (!lost) render(); });
+        canvas.addEventListener('webglcontextlost', event => { event.preventDefault(); lost = true; cancelAnimationFrame(frame); canvas.classList.remove('ready'); setAvailable(false); });
+        canvas.addEventListener('webglcontextrestored', () => location.reload());
+        addEventListener('scroll', () => { if (!lost && reduced.matches) render(); }, {passive:true});
+        addEventListener('resize', update); document.addEventListener('visibilitychange', update); reduced.addEventListener('change', update);
+        setAvailable(true); update();
+      } else console.error('Seascape program:', gl.getProgramInfoLog(program));
+    }
+  }
+}
+</script>

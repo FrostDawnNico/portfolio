@@ -1,4 +1,12 @@
-// Procedural wave field written for this portfolio.
+/*
+"Seascape" by Alexander Alekseev aka TDM - 2014
+License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
+Contact: tdmaav@gmail.com
+*/
+// Adapted for this portfolio: WebGL uniforms, adjustable wave parameters,
+// fixed camera orientation, scroll height, and stable horizon handling.
+// Original: https://www.shadertoy.com/view/Ms2SD1
+// License: https://creativecommons.org/licenses/by-nc-sa/3.0/
 precision highp float;
 uniform vec2 iResolution;
 uniform float iGlobalTime;
@@ -8,59 +16,187 @@ uniform float uWaveFrequency;
 uniform float uWavePhase;
 uniform float uCameraHeight;
 
-float waveField(vec2 p) {
-  float f = uWaveFrequency;
-  float phase = uWavePhase;
-  float a = sin(dot(p, vec2(0.87, 0.49)) * f * 2.3 + phase * 1.15);
-  float b = sin(dot(p, vec2(-0.43, 0.90)) * f * 3.7 - phase * 0.85);
-  float c = sin(dot(p, vec2(0.98, -0.20)) * f * 7.1 + phase * 1.65);
-  float d = sin(dot(p, vec2(0.30, 0.95)) * f * 11.0 - phase * 1.2);
-  float blend = (a * 0.48 + b * 0.29 + c * 0.15 + d * 0.08);
-  float crest = sign(blend) * pow(abs(blend), mix(1.0, 0.48, (uWaveChoppy - 1.0) / 5.0));
-  return uWaveHeight * (0.85 + 0.70 * crest);
+const int NUM_STEPS = 8;
+const float PI = 3.1415;
+const float EPSILON = 1e-3;
+#define EPSILON_NRM (0.1 / iResolution.x)
+
+// sea
+const int ITER_GEOMETRY = 3;
+const int ITER_FRAGMENT = 5;
+#define SEA_HEIGHT uWaveHeight
+#define SEA_CHOPPY uWaveChoppy
+
+#define SEA_FREQ uWaveFrequency
+const vec3 SEA_BASE = vec3(0.1,0.19,0.22);
+const vec3 SEA_WATER_COLOR = vec3(0.8,0.9,0.6);
+#define SEA_TIME uWavePhase
+mat2 octave_m = mat2(1.6,1.2,-1.2,1.6);
+
+// math
+mat3 fromEuler(vec3 ang) {
+vec2 a1 = vec2(sin(ang.x),cos(ang.x));
+vec2 a2 = vec2(sin(ang.y),cos(ang.y));
+vec2 a3 = vec2(sin(ang.z),cos(ang.z));
+mat3 m;
+m[0] = vec3(a1.y*a3.y+a1.x*a2.x*a3.x,a1.y*a2.x*a3.x+a3.y*a1.x,-a2.y*a3.x);
+m[1] = vec3(-a2.y*a1.x,a1.y*a2.y,a2.x);
+m[2] = vec3(a3.y*a1.x*a2.x+a1.y*a3.x,a1.x*a3.x-a1.y*a3.y*a2.x,a2.y*a3.y);
+return m;
+}
+float hash( vec2 p ) {
+float h = dot(p,vec2(127.1,311.7));
+return fract(sin(h)*43758.5453123);
+}
+float noise( in vec2 p ) {
+vec2 i = floor( p );
+vec2 f = fract( p );
+vec2 u = f*f*(3.0-2.0*f);
+return -1.0+2.0*mix( mix( hash( i + vec2(0.0,0.0) ),
+hash( i + vec2(1.0,0.0) ), u.x),
+mix( hash( i + vec2(0.0,1.0) ),
+hash( i + vec2(1.0,1.0) ), u.x), u.y);
 }
 
-vec3 skyColor(vec3 direction) {
-  float elevation = clamp(direction.y * 1.6, 0.0, 1.0);
-  return mix(vec3(0.84, 0.92, 0.94), vec3(0.35, 0.64, 0.80), pow(elevation, 0.6));
+// lighting
+float diffuse(vec3 n,vec3 l,float p) {
+return pow(dot(n,l) * 0.4 + 0.6,p);
+}
+float specular(vec3 n,vec3 l,vec3 e,float s) {
+float nrm = (s + 8.0) / (3.1415 * 8.0);
+return pow(max(dot(reflect(e,n),l),0.0),s) * nrm;
 }
 
-void main() {
-  vec2 uv = (gl_FragCoord.xy * 2.0 - iResolution) / iResolution.y;
-  vec3 origin = vec3(0.0, uCameraHeight, iGlobalTime * 0.12);
-  vec3 ray = normalize(vec3(uv.x * 0.90, uv.y - 0.16, -1.5));
-  vec3 color = skyColor(ray);
-  float previous = 0.0;
-  float distanceAlongRay = 0.25;
-  bool hit = false;
-  for (int i = 0; i < 64; i++) {
-    vec3 samplePoint = origin + ray * distanceAlongRay;
-    if (samplePoint.y < waveField(samplePoint.xz)) { hit = true; break; }
-    previous = distanceAlongRay;
-    distanceAlongRay += max(0.32, distanceAlongRay * 0.09);
-    if (distanceAlongRay > 220.0) break;
-  }
-  if (hit) {
-    for (int i = 0; i < 6; i++) {
-      float mid = (previous + distanceAlongRay) * 0.5;
-      vec3 samplePoint = origin + ray * mid;
-      if (samplePoint.y < waveField(samplePoint.xz)) distanceAlongRay = mid; else previous = mid;
-    }
-    vec3 point = origin + ray * distanceAlongRay;
-    float eps = 0.08 + distanceAlongRay * 0.0005;
-    float center = waveField(point.xz);
-    float dx = (waveField(point.xz + vec2(eps, 0.0)) - center) / eps;
-    float dz = (waveField(point.xz + vec2(0.0, eps)) - center) / eps;
-    vec3 normal = normalize(vec3(-dx, 1.0, -dz));
-    vec3 reflected = reflect(ray, normal);
-    float fresnel = pow(1.0 - max(dot(-ray, normal), 0.0), 3.0);
-    vec3 sun = normalize(vec3(-0.35, 0.80, -0.48));
-    float spec = pow(max(dot(reflected, sun), 0.0), 80.0);
-    float glimmer = pow(max(dot(reflected, sun), 0.0), 18.0);
-    vec3 deep = mix(vec3(0.025, 0.16, 0.21), vec3(0.08, 0.30, 0.32), max(normal.y, 0.0));
-    vec3 ocean = mix(deep, skyColor(reflected), 0.25 + 0.65 * fresnel) + vec3(1.0, 0.91, 0.76) * (spec * 0.75 + glimmer * 0.10);
-    float haze = 1.0 - exp(-distanceAlongRay * 0.009);
-    color = mix(ocean, skyColor(ray), clamp(haze, 0.0, 0.85));
-  }
-  gl_FragColor = vec4(pow(max(color, 0.0), vec3(0.9)), 1.0);
+// sky
+vec3 getSkyColor(vec3 e) {
+e.y = max(e.y,0.0);
+vec3 ret;
+ret.x = pow(1.0-e.y,2.0);
+ret.y = 1.0-e.y;
+ret.z = 0.6+(1.0-e.y)*0.4;
+return ret;
 }
+
+// sea
+float sea_octave(vec2 uv, float choppy) {
+uv += noise(uv);
+vec2 wv = 1.0-abs(sin(uv));
+vec2 swv = abs(cos(uv));
+wv = mix(wv,swv,wv);
+return pow(1.0-pow(wv.x * wv.y,0.65),choppy);
+}
+
+float map(vec3 p) {
+float freq = SEA_FREQ;
+float amp = SEA_HEIGHT;
+float choppy = SEA_CHOPPY;
+vec2 uv = p.xz; uv.x *= 0.75;
+
+float d, h = 0.0;
+for(int i = 0; i < ITER_GEOMETRY; i++) {
+d = sea_octave((uv+SEA_TIME)*freq,choppy);
+d += sea_octave((uv-SEA_TIME)*freq,choppy);
+h += d * amp;
+uv *= octave_m; freq *= 1.9; amp *= 0.22;
+choppy = mix(choppy,1.0,0.2);
+}
+return p.y - h;
+}
+
+float map_detailed(vec3 p) {
+float freq = SEA_FREQ;
+float amp = SEA_HEIGHT;
+float choppy = SEA_CHOPPY;
+vec2 uv = p.xz; uv.x *= 0.75;
+
+float d, h = 0.0;
+for(int i = 0; i < ITER_FRAGMENT; i++) {
+d = sea_octave((uv+SEA_TIME)*freq,choppy);
+d += sea_octave((uv-SEA_TIME)*freq,choppy);
+h += d * amp;
+uv *= octave_m; freq *= 1.9; amp *= 0.22;
+choppy = mix(choppy,1.0,0.2);
+}
+return p.y - h;
+}
+
+vec3 getSeaColor(vec3 p, vec3 n, vec3 l, vec3 eye, vec3 dist) {
+float fresnel = 1.0 - max(dot(n,-eye),0.0);
+fresnel = pow(fresnel,3.0) * 0.65;
+
+vec3 reflected = getSkyColor(reflect(eye,n));
+vec3 refracted = SEA_BASE + diffuse(n,l,80.0) * SEA_WATER_COLOR * 0.12;
+
+vec3 color = mix(refracted,reflected,fresnel);
+
+float atten = max(1.0 - dot(dist,dist) * 0.001, 0.0);
+color += SEA_WATER_COLOR * (p.y - SEA_HEIGHT) * 0.18 * atten;
+
+color += vec3(specular(n,l,eye,60.0));
+
+return color;
+}
+
+// tracing
+vec3 getNormal(vec3 p, float eps) {
+vec3 n;
+n.y = map_detailed(p);
+n.x = map_detailed(vec3(p.x+eps,p.y,p.z)) - n.y;
+n.z = map_detailed(vec3(p.x,p.y,p.z+eps)) - n.y;
+n.y = eps;
+return normalize(n);
+}
+
+float heightMapTracing(vec3 ori, vec3 dir, out vec3 p) {
+float tm = 0.0;
+float tx = 1000.0;
+float hx = map(ori + dir * tx);
+if(hx > 0.0) { p = ori + dir * tx; return tx; }
+float hm = map(ori + dir * tm);
+float tmid = 0.0;
+for(int i = 0; i < NUM_STEPS; i++) {
+tmid = mix(tm,tx, hm/(hm-hx));
+p = ori + dir * tmid;
+float hmid = map(p);
+if(hmid < 0.0) {
+tx = tmid;
+hx = hmid;
+} else {
+tm = tmid;
+hm = hmid;
+}
+}
+return tmid;
+}
+
+// main
+void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
+vec2 uv = fragCoord.xy / iResolution.xy;
+uv = uv * 2.0 - 1.0;
+uv.x *= iResolution.x / iResolution.y;
+float time = iGlobalTime * 0.12;
+
+// ray
+vec3 ang = vec3(0.0,0.3,0.0);
+vec3 ori = vec3(0.0,uCameraHeight,time*5.0);
+vec3 dir = normalize(vec3(uv.xy,-2.0)); dir.z += length(uv) * 0.15;
+dir = normalize(dir) * fromEuler(ang);
+
+// tracing
+vec3 p;
+heightMapTracing(ori,dir,p);
+vec3 dist = p - ori;
+vec3 n = getNormal(p, dot(dist,dist) * EPSILON_NRM);
+vec3 light = normalize(vec3(0.0,1.0,0.8));
+
+// color
+vec3 color = mix(
+getSkyColor(dir),
+getSeaColor(p,n,light,dir,dist),
+pow(1.0-smoothstep(-0.05,0.0,dir.y),0.3));
+
+// post
+fragColor = vec4(pow(color,vec3(0.75)), 1.0);
+}
+
+void main() { mainImage(gl_FragColor, gl_FragCoord.xy); }

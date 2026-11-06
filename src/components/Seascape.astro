@@ -50,8 +50,8 @@ if (canvas) {
           if (canvas.width !== width || canvas.height !== height) { canvas.width = width; canvas.height = height; gl.viewport(0,0,width,height); }
           const scrollable = Math.max(0, document.documentElement.scrollHeight - innerHeight);
           const progress = scrollable ? Math.min(1, Math.max(0, window.scrollY / scrollable)) : 0;
-          // The independent wave field is bounded by 1.55 times its height.
-          const minimumCamera = 1.55 * state.height + 0.25;
+          // Five wave octaves contribute at most twice their amplitudes.
+          const minimumCamera = 2 * state.height * (1 + 0.22 + 0.22**2 + 0.22**3 + 0.22**4) + 0.25;
           const camera = 3.5 + (minimumCamera - 3.5) * progress;
           gl.uniform2f(uniforms.iResolution, width, height); gl.uniform1f(uniforms.iGlobalTime, elapsed);
           gl.uniform1f(uniforms.uWaveHeight, state.height); gl.uniform1f(uniforms.uWaveChoppy, state.choppy);

@@ -1,5 +1,7 @@
 ---
 title: "Battle Cap"
+group: "game"
+groupOrder: 1
 category: "GAME DEVELOPMENT · TECHNICAL ART"
 period: "2023—2024"
 order: 3

@@ -1,5 +1,7 @@
 ---
 title: "Character Personalization System"
+group: "engineering"
+groupOrder: 2
 category: "WORK IN PROGRESS · GAME ENGINE"
 period: "In progress"
 order: 7

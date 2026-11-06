@@ -1,5 +1,7 @@
 ---
 title: "Neural Radiance Caching in Falcor"
+group: "research"
+groupOrder: 3
 category: "RESEARCH · PATH TRACING"
 period: "2024"
 order: 4

@@ -1,5 +1,11 @@
 ---
 title: "Neural Metameric Enhancement for Foveated Rendering"
+group: "research"
+groupOrder: 1
+previewCover: "images/foveated/preview-cover.jpg"
+previewCoverAlt: "Frame from the neural foveated rendering demonstration"
+previewVideo: "images/foveated/preview.mp4"
+paperUrl: "https://link.springer.com/chapter/10.1007/978-3-031-82021-2_16"
 category: "RESEARCH · PERCEPTUAL RENDERING"
 period: "2023—2024"
 order: 1

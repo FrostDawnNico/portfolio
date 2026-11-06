@@ -1,5 +1,11 @@
 ---
 title: "Depth of Field Through Multi-Sample Ray Tracing"
+group: "research"
+groupOrder: 2
+previewCover: "images/depth/preview-cover.jpg"
+previewCoverAlt: "Frame from the depth of field rendering demonstration"
+previewVideo: "images/depth/preview.mp4"
+paperUrl: "https://doi.org/10.1088/1742-6596/2711/1/012017"
 category: "RESEARCH · RAY TRACING"
 period: "2023—2024"
 order: 5

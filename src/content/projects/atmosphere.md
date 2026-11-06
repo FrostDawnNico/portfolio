@@ -1,5 +1,7 @@
 ---
 title: "Atmosphere Rendering & Optimization"
+group: "engineering"
+groupOrder: 1
 category: "WORK IN PROGRESS · REAL-TIME RENDERING"
 period: "In progress"
 order: 2

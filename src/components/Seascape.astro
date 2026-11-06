@@ -12,7 +12,7 @@ const state = {...defaults};
 const setAvailable = (available: boolean) => {
   controls.forEach(input => { input.disabled = !available; });
   if (reset) reset.disabled = !available;
-  if (hint) hint.textContent = available ? 'DRAG TO ADJUST · ARROW KEYS TO FINE-TUNE' : 'Ocean controls unavailable on this browser.';
+  if (hint) { hint.hidden = available; hint.textContent = available ? '' : 'Ocean controls unavailable on this browser.'; }
 };
 const reflect = (input: HTMLInputElement) => {
   const min = Number(input.min), max = Number(input.max), value = Number(input.value);

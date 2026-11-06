@@ -160,3 +160,19 @@ nav { font-size: 12px; letter-spacing: -.01em; }
 .work-card-image .work-card-preview { position:absolute; inset:0; width:100%; height:100%; object-fit:contain; background:#e1f2f0; opacity:0; pointer-events:none; transition:opacity .25s; }
 .work-card-image.preview-playing .work-card-preview { opacity:1; }
 @media (prefers-reduced-motion:reduce) { .work-card-image .work-card-preview { transition:none; } }
+
+/* Compact ocean controls while retaining comfortable dial targets. */
+.ocean-controls { margin-top:12px; padding:12px 20px 10px; }
+.ocean-controls h2 { margin:0; }
+.ocean-dials { margin-top:10px; }
+.ocean-dial { gap:4px; }
+.ocean-hint { margin-top:8px; }
+@media(max-width:760px) {
+ .ocean-controls { margin-top:10px; padding:11px 14px 9px; }
+ .ocean-dials { margin-top:9px; }
+}
+
+/* Keep the About heading compact and balanced on narrow screens. */
+@media (max-width:760px) {
+ .about h2 { font-size:clamp(43px,10.5vw,57px); line-height:.95; }
+}

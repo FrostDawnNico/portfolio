@@ -196,3 +196,8 @@ nav a:hover, .about-links a:hover, .prose a:hover, .back:hover, .home .seascape-
 @media(min-width:761px) {
  .about { grid-template-columns:repeat(2,minmax(0,1fr)); gap:26px; padding-left:calc((100% - min(1600px, 100%)) / 2 + 5%); padding-right:calc((100% - min(1600px, 100%)) / 2 + 5%); }
 }
+
+/* Align the full-width hero with the centered sections below it. */
+.hero { padding-left:calc((100% - min(1600px, 100%)) / 2 + 5%); padding-right:calc((100% - min(1600px, 100%)) / 2 + 5%); }
+.hero-index { left:calc((100% - min(1600px, 100%)) / 2 + 5%); }
+.about-life { margin-left:auto; margin-right:auto; }

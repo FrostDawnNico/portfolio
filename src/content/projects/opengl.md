@@ -9,8 +9,8 @@ summary: "An exploration of the real-time rendering pipeline through OpenGL and 
 role: "Graphics programming"
 focus: "OpenGL / GLSL / Real-time rendering"
 lead: "Building a foundation in the real-time rendering pipeline."
-cover: "images/opengl/cover.jpg"
-coverAlt: "Real-time graphics examples from the project report"
+cover: "images/opengl/postprocessing.png"
+coverAlt: "Real-time rendered scene with a glowing ring and textured objects"
 credits: "Completed as coursework during the NUS summer workshop."
 draft: false
 links: [{"label":"Watch project video","url":"https://www.bilibili.com/video/BV1WB4y187M5/"}]

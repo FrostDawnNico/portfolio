@@ -17,7 +17,9 @@ cover: "images/foveated/cover.jpg"
 coverAlt: "Comparison images from the foveated rendering research paper"
 credits: "Research with Jiannan Ye, Xiaoxu Meng, and Xubo Yang. Zhenkai Zhong is a co-author."
 draft: false
-links: [{"label":"Read the paper","url":"https://link.springer.com/chapter/10.1007/978-3-031-82021-2_16"}]
+links:
+  - label: "Read the paper"
+    url: "https://link.springer.com/chapter/10.1007/978-3-031-82021-2_16"
 ---
 
 ## The challenge

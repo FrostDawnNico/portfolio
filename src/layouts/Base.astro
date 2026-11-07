@@ -4,10 +4,75 @@ import '@fontsource-variable/cormorant-garamond';
 import '@fontsource-variable/cormorant-garamond/wght-italic.css';
 import '../styles/theme.css';
 import '../styles/site.css';
+
 interface Props { title?: string; description?: string; home?: boolean }
-const {title="Zhenkai's Portfolio", description='Graphics research, real-time rendering, and game development by Zhenkai Zhong.', home=false}=Astro.props;
-const base=(import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : import.meta.env.BASE_URL + '/');
+const { title = "Zhenkai's Portfolio", description = 'Graphics research, real-time rendering, and game development by Zhenkai Zhong.', home = false } = Astro.props;
+const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+const workSections = [
+  { id: 'research', label: 'Research' },
+  { id: 'engineering', label: 'Engineering' },
+  { id: 'game', label: 'Game' },
+  { id: 'graphics', label: 'Practice' },
+];
 ---
-<!doctype html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="description" content={description}/><meta name="theme-color" content="#e1f4e4"/><title>{title}</title></head><body class:list={[{home}]}><a class="skip" href="#main">Skip to content</a><header class="header"><a class="wordmark" href={base}>ZHENKAI ZHONG<span> / </span>PORTFOLIO</a><nav aria-label="Main navigation"><a href={`${base}#work`}>Work</a><a href={`${base}#about`}>About</a><a href="mailto:nicozhongzk@gmail.com">Contact ↗</a></nav></header><main id="main"><slot /></main><footer><span>ZHENKAI ZHONG <span class="muted">/ GRAPHICS & GAME TECHNOLOGY</span></span><a href="mailto:nicozhongzk@gmail.com">GET IN TOUCH ↗</a><span class="muted">© 2026</span></footer></body></html>
-
-
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#e1f4e4" />
+    <title>{title}</title>
+  </head>
+  <body class:list={[{ home }]}>
+    <a class="skip" href="#main">Skip to content</a>
+    <header class="header">
+      <a class="wordmark" href={base}>ZHENKAI ZHONG<span> / </span>PORTFOLIO</a>
+      <nav aria-label="Main navigation">
+        <a class="nav-home" href={`${base}#home`}>Home</a>
+        <div class="work-nav">
+          <a href={`${base}#work`}>Work</a>
+          <button class="work-nav-toggle" type="button" aria-label="Show work sections" aria-expanded="false" aria-controls="work-menu">▾</button>
+          <div class="work-nav-menu" id="work-menu">
+            {workSections.map(({ id, label }) => <a href={`${base}#group-${id}`}>{label}</a>)}
+          </div>
+        </div>
+        <a href={`${base}#about`}>About</a>
+        <a class="nav-contact" href="mailto:nicozhongzk@gmail.com">Contact ↗</a>
+      </nav>
+    </header>
+    <main id="main"><slot /></main>
+    <footer>
+      <span>ZHENKAI ZHONG <span class="muted">/ PORTFOLIO</span></span>
+      <a href="mailto:nicozhongzk@gmail.com">Contact ↗</a>
+      <span class="muted">© 2026</span>
+    </footer>
+  </body>
+</html>
+<script>
+  const workNav = document.querySelector('.work-nav');
+  const workToggle = document.querySelector('.work-nav-toggle');
+  if (workNav instanceof HTMLElement && workToggle instanceof HTMLButtonElement) {
+    let openedByHover = false;
+    const close = () => workToggle.setAttribute('aria-expanded', 'false');
+    const dismiss = () => { openedByHover = false; close(); workNav.classList.add('suppress-hover'); };
+    workNav.addEventListener('pointerenter', event => {
+      if (event.pointerType === 'mouse' && !workNav.classList.contains('suppress-hover') && workToggle.getAttribute('aria-expanded') !== 'true') {
+        openedByHover = true;
+        workToggle.setAttribute('aria-expanded', 'true');
+      }
+    });
+    workNav.addEventListener('pointerleave', event => {
+      if (event.pointerType === 'mouse') { openedByHover = false; workNav.classList.remove('suppress-hover'); if (!workNav.contains(document.activeElement)) close(); }
+    });
+    workToggle.addEventListener('click', () => {
+      if (openedByHover) openedByHover = false;
+      else if (workToggle.getAttribute('aria-expanded') === 'true') dismiss();
+      else { workNav.classList.remove('suppress-hover'); workToggle.setAttribute('aria-expanded', 'true'); }
+    });
+    workNav.addEventListener('click', event => { if (event.target instanceof HTMLAnchorElement && event.target.closest('.work-nav-menu')) dismiss(); });
+    document.addEventListener('click', event => { if (event.target instanceof Node && !workNav.contains(event.target)) close(); });
+    workNav.addEventListener('keydown', event => { if (event.key === 'Escape') { dismiss(); workToggle.focus(); } });
+    workNav.addEventListener('focusout', event => { if (!(event.relatedTarget instanceof Node) || !workNav.contains(event.relatedTarget)) close(); });
+  }
+</script>

@@ -15,7 +15,9 @@ heroCover: "images/battle/hero.jpg"
 heroAlt: "Battle Cap boats racing through a naval battle"
 credits: "A collaborative game by MechAlmond Productions. The game and official video represent the team’s collective work."
 draft: false
-links: [{"label":"Watch official gameplay","url":"https://www.bilibili.com/video/BV1BRKoeMExG/"}]
+links:
+  - label: "Watch official gameplay"
+    url: "https://www.bilibili.com/video/BV1BRKoeMExG/"
 ---
 
 ## The challenge
@@ -33,4 +35,3 @@ The work connected visual direction with practical implementation, translating s
 ## Outcome
 
 Battle Cap is a released team project. It received the Silver Award in the industry track of Tencent’s 2024 Global Game Competition, as noted in the supplied CV.
-

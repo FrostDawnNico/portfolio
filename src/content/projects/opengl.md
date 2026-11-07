@@ -13,7 +13,9 @@ cover: "images/opengl/postprocessing.png"
 coverAlt: "Real-time rendered scene with a glowing ring and textured objects"
 credits: "Completed as coursework during the NUS summer workshop."
 draft: false
-links: [{"label":"Watch project video","url":"https://www.bilibili.com/video/BV1WB4y187M5/"}]
+links:
+  - label: "Watch project video"
+    url: "https://www.bilibili.com/video/BV1WB4y187M5/"
 ---
 
 ## The challenge

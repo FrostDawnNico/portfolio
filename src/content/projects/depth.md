@@ -17,7 +17,11 @@ cover: "images/depth/cover.jpg"
 coverAlt: "Depth of field ray tracing comparisons from the published paper"
 credits: "Sole-authored publication by Zhenkai Zhong, developed with guidance from Prof. James O’Brien."
 draft: false
-links: [{"label":"Try the interactive demo","url":"https://www.shadertoy.com/view/dssBWs"},{"label":"Read the paper","url":"https://doi.org/10.1088/1742-6596/2711/1/012017"}]
+links:
+  - label: "Try the interactive demo"
+    url: "https://www.shadertoy.com/view/dssBWs"
+  - label: "Read the paper"
+    url: "https://doi.org/10.1088/1742-6596/2711/1/012017"
 ---
 
 ## The challenge

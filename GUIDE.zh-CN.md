@@ -1,55 +1,49 @@
 # 作品集网站维护指南
 
-本文面向维护者及协作 Agent。开发仓库为 `D:\Agent\Portfolio\portfolio-release`；网站为 [GitHub Pages](https://frostdawnnico.github.io/portfolio/)，源码仓库为 [FrostDawnNico/portfolio](https://github.com/FrostDawnNico/portfolio)。工作区的 `素材/` 保存项目原始资料，`备份/` 保存历史版本和归档。除非明确要求，不修改或覆盖备份。
+网站源码位于 `D:\Agent\Portfolio\portfolio-release`，线上地址为 [作品集](https://frostdawnnico.github.io/portfolio/)，源码仓库为 [GitHub](https://github.com/FrostDawnNico/portfolio)。`素材/` 保存原始资料，`备份/` 保存历史版本；未经明确要求，不公开或修改原始素材，也不覆盖或删除备份。
 
-## 本地开发和验证
+## 开发和检查
 
-GitHub Actions 使用 Node.js 22。在 PowerShell 中：
+GitHub Actions 使用 Node.js 22。首次运行或重新安装依赖后，在开发仓库执行：
 
 ```powershell
-cd D:\Agent\Portfolio\portfolio-release
 npm ci
 npm run dev
 npm run check
 npm run build
 ```
 
-`npm ci` 用于首次安装或重新安装依赖；开发预览地址以终端输出为准，使用 Ctrl+C 停止。根据改动检查桌面、移动端及相关交互，并报告未验证的场景。
+预览地址以终端输出为准。重复启动前先检查端口是否已有本站预览；停止运行中的预览使用 Ctrl+C。受限环境阻止 Astro 写入用户配置目录时，可设置 `$env:APPDATA` 到仓库内的 `.local-config`，并设置 `$env:ASTRO_TELEMETRY_DISABLED = '1'`。依赖、缓存和构建产物不属于源码。
 
-若受限环境阻止 Astro 写入用户配置目录，可先设置 `$env:APPDATA = 'D:\Agent\Portfolio\portfolio-release\.local-config'` 和 `$env:ASTRO_TELEMETRY_DISABLED = '1'`。依赖、缓存和构建产物不属于网站源码。
+修改后检查桌面和手机布局、相关链接和交互；涉及动画时检查键盘、触屏及减少动态效果。报告未完成的检查。
 
-## 修改项目和媒体
+## 项目内容和媒体
 
-`src/content/projects/` 中每个 Markdown 文件对应一个项目，文件名决定详情页路径，重命名可能使旧链接失效。字段定义以 `src/content.config.ts` 为准，首页分组和排序以 `src/pages/index.astro` 为准：
+`src/content/projects/` 中每个 Markdown 文件对应一个项目；文件名决定详情页路径，重命名可能使旧链接失效。字段定义见 `src/content.config.ts`：
 
-- `group` 为 `research`、`engineering`、`game` 或 `graphics`；`groupOrder` 控制组内顺序，数字越小越靠前。`order` 控制项目集合的整体顺序。
+- `group` 为 `research`、`engineering`、`game` 或 `graphics`；`groupOrder` 控制组内顺序，`order` 控制整体顺序及详情页编号。
 - `title`、`category`、`period`、`summary`、`role`、`focus`、`lead` 描述项目；`credits` 记录署名。
-- `cover`、`coverAlt` 对应封面和描述；`heroCover`、`heroAlt`、`imageNote` 可用于详情页。预览视频使用可选的 `previewVideo`、`previewCover` 和 `previewCoverAlt`；`paperUrl` 可指定论文网址。
-- `links` 是标题与网址的列表；`draft: true` 会在构建时隐藏项目，但公开仓库中的文件仍可被查看。
+- `cover`、`coverAlt` 是封面和替代文字；`heroCover`、`heroAlt`、`imageNote` 可用于详情页。`previewVideo`、`previewCover`、`previewCoverAlt` 用于首页预览；`paperUrl` 可指定论文网址。
+- `links` 是标题与网址的列表；`draft: true` 会在网站构建时隐藏项目，但公开仓库中的文件仍可查看。
 
-新增项目时参考现有内容和 schema，填写所需字段，并检查首页卡片与详情页。网站公开资源放在 `public/`，字段路径参考现有项目。工作区素材是原始资料，不应未经核实直接公开；检查素材权限、隐私及文件体积后再选取网站使用的版本。
+首页分组标题和说明在 `src/pages/index.astro`；导航菜单对应分组在 `src/layouts/Base.astro`。新增或修改项目时参考已有文件，并检查卡片及详情页。网站资源放在 `public/`；从素材选图前核实公开权限、隐私和文件体积。
 
-## 实现入口
+## 代码与配色
 
-- `src/pages/index.astro`：首页、项目分组和超立方体；`src/pages/projects/[id].astro`：项目详情。
-- `src/layouts/Base.astro`、`src/styles/site.css`：公共结构和样式。
-- `src/components/Seascape.astro`、`src/seascape.glsl`：首页海景；`src/components/OceanControls.astro`：海景交互。
+- `src/pages/index.astro`：首页分组、超立方体与卡片预览；`src/pages/projects/[id].astro`：项目详情。
+- `src/layouts/Base.astro`、`src/styles/site.css`：公共结构与样式。
+- `src/components/Seascape.astro`、`src/components/OceanControls.astro`、`src/seascape.glsl`：海景及其控件。
+- `src/styles/theme.css`：主题配色。`--ink`、`--muted` 控制文字，`--aqua-*` 控制交互，`--surface-*` 控制背景；超立方体和海景读取的颜色需为六位十六进制。
 
-## 调整配色
+海景支持旋钮与键盘控制，并提供减少动态效果和 WebGL 不可用时的处理。更改配色或动画后检查对比度、动态效果和移动端性能。
 
-主题颜色集中在 `src/styles/theme.css`：`--ink`、`--muted` 控制文字；`--aqua-*` 控制链接、标签、交互状态及轮廓；`--mint` 和 `--lemon-bright` 是强调色。`--surface-media-rgb` 使用空格分隔的 0–255 数值，同时控制图片留白、视频背景、详情页占位及半透明 About 背景；其他 `--surface-*` 控制页面和控件背景。
+## 备份与发布
 
-超立方体使用 `--cube-line`、`--cube-point` 和 `--lemon-bright`；海景使用 `--sea-base` 与 `--sea-highlight`，备用渐变使用 `--sea-fallback-*`。这些供画布或海景读取的颜色须写成六位十六进制，如 `#207e93`，修改后刷新页面。配色调整后检查文字对比度、图片留白、动态海景和移动端效果。
+检查分支、远程状态和未提交改动，保留现有工作；检查与构建通过后审阅差异。创建新版本备份时使用尚不存在的 `备份/portfolio-vN/`，保存对应提交的源码，不包含 `.git`、依赖、缓存和构建产物；记录提交标识及验证结果，不覆盖旧备份。
 
-海景支持旋钮和键盘控制，并处理减少动态效果及 WebGL 不可用的情况。涉及相关功能时，应检查交互、移动端布局和性能。
+`.github/workflows/pages.yml` 在推送 `main` 时构建和部署；其他分支推送不触发部署。面向 `main` 的 pull request 只运行构建检查；也可手动运行工作流。发布后核对 GitHub Actions 和线上页面，推送成功不代表部署成功。
 
-## 发布与恢复
-
-先检查当前分支、远程状态和工作区改动，保留已有工作；修改后执行适当检查并审阅差异。
-
-`.github/workflows/pages.yml` 在推送 `main` 时构建并部署；推送其他工作分支本身不触发该部署。指向 `main` 的 pull request 运行构建检查，不部署；手动运行工作流也可以部署。发布后检查 GitHub Actions 结果和线上页面，推送成功本身不等于部署成功。
-
-`备份/` 中的版本可供恢复参考。第二版基准提交为 `ae3b750f38da1a32e9858c5a43e83fdfbe3e436f`；恢复前核对目标和已有改动，采用可追溯的方式。
+历史备份可供恢复参考。第二版基准提交为 `ae3b750f38da1a32e9858c5a43e83fdfbe3e436f`；恢复前核对目标与已有改动，并保留可追溯记录。
 
 ## 海景来源
 

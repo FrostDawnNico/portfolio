@@ -1,7 +1,7 @@
 ---
 title: "Real-Time 3D Graphics"
-group: "additional"
-groupOrder: 1
+group: "graphics"
+groupOrder: 2
 category: "PROJECT · REAL-TIME GRAPHICS"
 period: "2022"
 order: 6

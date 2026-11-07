@@ -1,110 +1,56 @@
-# 作品集：内容更新与发布指南
+# 作品集网站维护指南
 
-本指南适用于 [作品集网站](https://frostdawnnico.github.io/portfolio/) 和 [GitHub 仓库](https://github.com/FrostDawnNico/portfolio)。本地项目目录：`D:\Agent\Portfolio\portfolio-v2`。网站使用 Astro 生成静态页面，无需数据库或常驻服务器。
+本文面向维护者及协作 Agent。开发仓库为 `D:\Agent\Portfolio\portfolio-release`；网站为 [GitHub Pages](https://frostdawnnico.github.io/portfolio/)，源码仓库为 [FrostDawnNico/portfolio](https://github.com/FrostDawnNico/portfolio)。工作区的 `素材/` 保存项目原始资料，`备份/` 保存历史版本和归档。除非明确要求，不修改或覆盖备份。
 
-## 一、首次准备与本地预览
+## 本地开发和验证
 
-1. 安装 Node.js 22 或更高版本，并在 PowerShell 中进入项目目录：
-
-   ```powershell
-   cd D:\Agent\Portfolio\portfolio-v2
-   npm ci
-   npm run dev
-   ```
-
-2. 在浏览器打开终端显示的地址，通常是 `http://localhost:4321/`。修改文件后页面一般会自动刷新；停止预览时在终端按 `Ctrl+C`。以后依赖没变时通常不必重复运行 `npm ci`。
-3. 如果预览不正确，可重启预览服务。预览服务仅在本机运行，与公开网站无关。
-
-## 二、修改项目内容
-
-项目内容保存在 `src/content/projects/`，每个 `.md` 文件对应一个项目；例如 `battle.md` 是 Battle Cap。文件名前缀决定项目详情网址，改名可能导致已有外部链接失效。
-
-用编辑器打开文件。开头两个 `---` 之间是项目信息，下面是 Markdown 正文：
-
-```yaml
----
-title: "Battle Cap"
-category: "GAME DEVELOPMENT · TECHNICAL ART"
-period: "2023—2024"
-order: 3
-summary: "Technical art for a multiplayer party game."
-role: "Technical art intern · Team project"
-focus: "Game development / Technical art"
-lead: "Bringing playful visual ideas into a working game."
-cover: "images/battle/cover.jpg"
-coverAlt: "Battle Cap illustrated cover art"
-heroCover: "images/battle/hero.jpg"
-heroAlt: "Battle Cap boats racing through a naval battle"
-credits: "A collaborative game by MechAlmond Productions."
-draft: false
-links: [{"label":"Watch official gameplay","url":"https://www.bilibili.com/video/BV1BRKoeMExG/"}]
----
-
-## The challenge
-
-在这里写英文项目介绍。
-```
-
-- `order` 越小越靠前。调整排序时修改相关项目的数字，避免重复；首页和详情页编号都会随之更新。
-- `title`、`summary` 分别用于标题和首页简介；`role`、`focus`、`lead`、`credits` 用于说明职责、方向、概述和署名。`category`、`period` 显示项目分类和时间。
-- `cover` 是首页封面，`coverAlt` 是图片文字描述。`heroCover` 和 `heroAlt` 是可选的详情页主图及描述；不填时沿用 `cover` 和 `coverAlt`。
-- `links` 放论文、代码或视频的标题和完整网址；没有链接可写 `links: []`。字段内容中有英文双引号时要转义为 `\"`。
-- 将 `draft: true` 可在构建时隐藏首页卡片和详情页；公开 GitHub 仓库里的草稿文件仍然可被任何人查看，不能用于保存保密内容。
-- `imageNote` 是可选的详情页图片说明；其他字段及格式可参考现有项目。
-
-## 三、添加项目与媒体
-
-1. 复制一个现有 `.md` 文件，按项目另存到 `src/content/projects/`，使用小写英文、数字和连字符命名，例如 `my-new-project.md`。
-2. 修改所有字段和正文，并为 `order` 选择不重复的数字。项目独有的章节可直接用 Markdown 自由编排。
-3. 将图片放入 `public/images/my-new-project/`，在字段中填写 `images/my-new-project/cover.jpg`，不带开头斜杠。例如 `cover: "images/my-new-project/cover.jpg"`。
-4. 要在正文插入图片，可使用 `![图片说明](../../images/my-new-project/detail.jpg)`；此相对路径适配现有 `/portfolio/projects/项目名/` 页面结构。更改网址结构后需重新检查。
-5. 建议先压缩大图。大视频不要直接提交到 Git：先上传到合适的视频托管平台，再把公开链接加入 `links`。未获授权的团队资产或不适合公开的内容不要提交。
-6. 本地预览并检查新增卡片、详情页和媒体后，再按下面的流程发布。
-
-## 四、修改个人介绍和首页
-
-- 姓名、昵称、首页介绍和超立方体：`src/pages/index.astro`。
-- 导航、页脚和联系方式：`src/layouts/Base.astro`。
-- 配色、字体、布局和响应式样式：`src/styles/site.css`。
-- 这些文件包含代码；文字尽量保留原有引号和标签，修改后检查预览。项目内容优先通过 Markdown 修改。
-
-## 五、手动发布
-
-仓库中的 `main` 是正式发布分支；推送或合并到 `main` 会自动运行 GitHub Actions 并发布，无需手动上传 `dist/`。当前工作分支为 `work/content`。在编辑前，先保存本地工作，并确保没有未提交的修改：
+GitHub Actions 使用 Node.js 22。在 PowerShell 中：
 
 ```powershell
-cd D:\Agent\Portfolio\portfolio-v2
-git status
-git fetch origin
-git switch work/content
-git pull --ff-only origin main
+cd D:\Agent\Portfolio\portfolio-release
+npm ci
+npm run dev
+npm run check
+npm run build
 ```
 
-如果 `git pull --ff-only` 因分支有未合并提交而失败，先查看 `git status`，不要强制覆盖；可以让我协助处理。接着：
+`npm ci` 用于首次安装或重新安装依赖；开发预览地址以终端输出为准，使用 Ctrl+C 停止。根据改动检查桌面、移动端及相关交互，并报告未验证的场景。
 
-1. 修改文件，在本地预览确认。
-2. 运行 `npm run check` 和 `npm run build`，确认都成功。
-3. 查看 `git status` 和 `git diff`，确认只有你想公开的内容，然后执行：
+若受限环境阻止 Astro 写入用户配置目录，可先设置 `$env:APPDATA = 'D:\Agent\Portfolio\portfolio-release\.local-config'` 和 `$env:ASTRO_TELEMETRY_DISABLED = '1'`。依赖、缓存和构建产物不属于网站源码。
 
-   ```powershell
-   git add --all
-   git commit -m "Update portfolio content"
-   git push -u origin work/content
-   ```
+## 修改项目和媒体
 
-   首次推送可能需要你使用 GitHub 官方登录流程授权。不要把密码或访问令牌写进文件、命令或聊天。
-4. 打开 [仓库 Pull requests](https://github.com/FrostDawnNico/portfolio/pulls)，从 `work/content` 向 `main` 创建 Pull Request，检查改动和 Actions 状态。PR 只构建检查，不会自动生成可访问的预览网址；请先本地预览。
-5. 选择 **Create a merge commit** 合并到 `main`。随后在 [Actions](https://github.com/FrostDawnNico/portfolio/actions) 查看最新的 **Build and deploy** 是否成功，并打开公开网站检查。合并后同步工作分支：
+`src/content/projects/` 中每个 Markdown 文件对应一个项目，文件名决定详情页路径，重命名可能使旧链接失效。字段定义以 `src/content.config.ts` 为准，首页分组和排序以 `src/pages/index.astro` 为准：
 
-   ```powershell
-   git switch work/content
-   git pull --ff-only origin main
-   ```
+- `group` 为 `research`、`engineering`、`game` 或 `graphics`；`groupOrder` 控制组内顺序，数字越小越靠前。`order` 控制项目集合的整体顺序。
+- `title`、`category`、`period`、`summary`、`role`、`focus`、`lead` 描述项目；`credits` 记录署名。
+- `cover`、`coverAlt` 对应封面和描述；`heroCover`、`heroAlt`、`imageNote` 可用于详情页。预览视频使用可选的 `previewVideo`、`previewCover` 和 `previewCoverAlt`；`paperUrl` 可指定论文网址。
+- `links` 是标题与网址的列表；`draft: true` 会在构建时隐藏项目，但公开仓库中的文件仍可被查看。
 
-如果选择 squash 或 rebase 合并，同步步骤可能需要额外处理；默认采用 merge commit。若构建失败，打开 Actions 中失败的步骤查看日志，修复后再次提交并推送。直接推送到 `main` 也会发布，因此建议始终通过工作分支和 PR。
+新增项目时参考现有内容和 schema，填写所需字段，并检查首页卡片与详情页。网站公开资源放在 `public/`，字段路径参考现有项目。工作区素材是原始资料，不应未经核实直接公开；检查素材权限、隐私及文件体积后再选取网站使用的版本。
 
-## 六、回退与备份
+## 实现入口
 
-在 GitHub 的提交记录或 Pull Request 页面找到需要撤销的改动，使用 **Revert** 创建反向提交，再合并到 `main`；Actions 会重新部署。避免对公开分支强制推送。回退后检查网站，必要时强制刷新浏览器缓存。
+- `src/pages/index.astro`：首页、项目分组和超立方体；`src/pages/projects/[id].astro`：项目详情。
+- `src/layouts/Base.astro`、`src/styles/site.css`：公共结构和样式。
+- `src/components/Seascape.astro`、`src/seascape.glsl`：首页海景；`src/components/OceanControls.astro`：海景交互。
 
-第一版另存于 `D:\Agent\Portfolio\graphics-portfolio`，并保留 `ver1` 标签；它不是当前 GitHub Pages 网站。当前网站的所有源码也在公开 GitHub 仓库中。
+## 调整配色
+
+主题颜色集中在 `src/styles/theme.css`：`--ink`、`--muted` 控制文字；`--aqua-*` 控制链接、标签、交互状态及轮廓；`--mint` 和 `--lemon-bright` 是强调色。`--surface-media-rgb` 使用空格分隔的 0–255 数值，同时控制图片留白、视频背景、详情页占位及半透明 About 背景；其他 `--surface-*` 控制页面和控件背景。
+
+超立方体使用 `--cube-line`、`--cube-point` 和 `--lemon-bright`；海景使用 `--sea-base` 与 `--sea-highlight`，备用渐变使用 `--sea-fallback-*`。这些供画布或海景读取的颜色须写成六位十六进制，如 `#207e93`，修改后刷新页面。配色调整后检查文字对比度、图片留白、动态海景和移动端效果。
+
+海景支持旋钮和键盘控制，并处理减少动态效果及 WebGL 不可用的情况。涉及相关功能时，应检查交互、移动端布局和性能。
+
+## 发布与恢复
+
+先检查当前分支、远程状态和工作区改动，保留已有工作；修改后执行适当检查并审阅差异。
+
+`.github/workflows/pages.yml` 在推送 `main` 时构建并部署；推送其他工作分支本身不触发该部署。指向 `main` 的 pull request 运行构建检查，不部署；手动运行工作流也可以部署。发布后检查 GitHub Actions 结果和线上页面，推送成功本身不等于部署成功。
+
+`备份/` 中的版本可供恢复参考。第二版基准提交为 `ae3b750f38da1a32e9858c5a43e83fdfbe3e436f`；恢复前核对目标和已有改动，采用可追溯的方式。
+
+## 海景来源
+
+海景改编自 Alexander Alekseev（TDM，2014）的 [Seascape](https://www.shadertoy.com/view/Ms2SD1)。所用[源码副本](https://gist.github.com/matthewjberger/868a0c2596cbb2ba1e72bfdc64dfb6f1)标注 [CC BY-NC-SA 3.0](https://creativecommons.org/licenses/by-nc-sa/3.0/)，原 Shadertoy 页面许可此前未能直接核实。网站当前为非商业求学作品集；修改海景时保留署名、许可信息及改编源码链接。用途或许可状态变化时应重新核实。

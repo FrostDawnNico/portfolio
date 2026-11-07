@@ -15,6 +15,8 @@ uniform float uWaveChoppy;
 uniform float uWaveFrequency;
 uniform float uWavePhase;
 uniform float uCameraHeight;
+uniform vec3 uSeaBase;
+uniform vec3 uSeaHighlight;
 
 const int NUM_STEPS = 8;
 const float PI = 3.1415;
@@ -28,8 +30,8 @@ const int ITER_FRAGMENT = 5;
 #define SEA_CHOPPY uWaveChoppy
 
 #define SEA_FREQ uWaveFrequency
-const vec3 SEA_BASE = vec3(0.1,0.19,0.22);
-const vec3 SEA_WATER_COLOR = vec3(0.8,0.9,0.6);
+#define SEA_BASE uSeaBase
+#define SEA_WATER_COLOR uSeaHighlight
 #define SEA_TIME uWavePhase
 mat2 octave_m = mat2(1.6,1.2,-1.2,1.6);
 

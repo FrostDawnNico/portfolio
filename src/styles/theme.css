@@ -1,0 +1,18 @@
+/* Edit this palette to retheme the website; canvas and ocean read the hex colors on page load. */
+:root {
+  --color-white:#ffffff; --ink:#17363c; --muted:#5d7d80; --aqua-subtle:#719795;
+  --paper:#f5fbfc; --line:#b9dce0;
+  --surface-media-rgb:225 245 248; --surface-media:rgb(var(--surface-media-rgb));
+  --surface-page-rgb:248 252 253; --surface-hero-rgb:249 253 253;
+  --surface-hero-blue-rgb:224 246 251; --surface-panel-rgb:245 252 253;
+  --surface-panel:#e8f5f7; --surface-alt:#c7e9ef;
+  --aqua-ink:#216d7f; --aqua-hover:#174f61; --aqua-label:#386f7d; --aqua-focus:#08677b; --aqua-soft:#dceff3;
+  --aqua-border:#78aab6; --aqua-border-rgb:72 126 136;
+  --mint:#438e70; --lemon-bright:#ebdd68;
+  --dial-active:#5599aa; --dial-track:#c5e0e5;
+  --sea-fallback-light:#65b4c5; --sea-fallback-dark:#20576a;
+  --cube-line:#207e93; --cube-point:#237a8d;
+  --sea-base:#1a3b47; --sea-highlight:#a6e6f2;
+  --legacy-glow-light:#fffbd8; --legacy-glow-yellow:#f4e38e; --legacy-glow-mint:#a9e2bf; --legacy-glow-teal:#76c5ae; --legacy-glow-blue:#8bd3d8;
+  --legacy-shadow:#49a5ad24; --legacy-overlay:#f6fbf9cc;
+}

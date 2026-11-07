@@ -8,29 +8,33 @@ const groups = [
   {id:'research', number:'01', title:'Research', description:'Greater realism comes from more advanced technology.'},
   {id:'engineering', number:'02', title:'Engineering', description:'Solving real-world problems and balancing visual quality with performance.'},
   {id:'game', number:'03', title:'Game', description:'Creating joy through technology.'},
-  {id:'additional', number:'04', title:'Additional work', description:'Building a solid foundation through curiosity and exploration.'},
+  {id:'graphics', number:'04', title:'Practice', description:'Exploring rendering techniques through graphics programming and experimentation.'},
 ] as const;
 const base=(import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : import.meta.env.BASE_URL + '/');
 ---
-<Base home><Seascape /><section class="hero"><div class="hero-copy"><p class="kicker">PORTFOLIO / GRAPHICS &amp; GAME TECHNOLOGY</p><h1 class="hero-title"><span class="title-first">Zhenkai</span><span class="title-second">Zhong<span class="title-dot">.</span></span></h1><p class="hero-alias"><span>ALSO KNOWN AS</span><em>FrostDawn</em></p><p class="intro">Light Meets Logic</p><a class="cta" href="#work">Explore the work <span>↘</span></a></div><div class="field"><div class="hypercube-control" tabindex="0" role="group" aria-label="Interactive tesseract. Drag to rotate or use the arrow keys."><canvas id="light-field" aria-hidden="true"></canvas><svg class="field-fallback" viewBox="0 0 320 320" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.3"><path d="M38 74 L194 38 L282 106 L126 143 Z M38 74 L38 226 L126 282 L126 143 M282 106 L282 228 L126 282 M194 38 L194 183 L282 228 M38 226 L194 183"/><path d="M91 105 L183 84 L235 124 L143 145 Z M91 105 L91 197 L143 230 L143 145 M235 124 L235 198 L143 230 M183 84 L183 173 L235 198 M91 197 L183 173 M38 74 L91 105 M194 38 L183 84 M282 106 L235 124 M126 143 L143 145 M38 226 L91 197 M194 183 L183 173 M282 228 L235 198 M126 282 L143 230"/></g></svg></div><OceanControls /></div><div class="hero-index">GRAPHICS RESEARCH <span>✳</span> GAME ENGINE <span>✳</span> GAME DEVELOPMENT</div></section><section class="section work" id="work"><div class="section-header work-intro"><h2>Selected Work<span>.</span></h2><p>My Research &amp; My Engineering &amp; My Game</p></div><div class="work-groups">{groups.map((group) => {
+<Base home><Seascape /><section class="hero"><div class="hero-copy"><p class="kicker">PORTFOLIO / GRAPHICS &amp; GAME TECHNOLOGY</p><h1 class="hero-title"><span class="title-first">Zhenkai</span><span class="title-second">Zhong<span class="title-dot">.</span></span></h1><p class="hero-alias"><span>ALSO KNOWN AS</span><em>FrostDawn</em></p><p class="intro">Light Meets Logic</p><a class="cta" href="#work">Explore the work <span>↘</span></a></div><div class="field"><div class="hypercube-control" tabindex="0" role="group" aria-label="Interactive tesseract. Drag to rotate or use the arrow keys."><canvas id="light-field" aria-hidden="true"></canvas><svg class="field-fallback" viewBox="0 0 320 320" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.3"><path d="M38 74 L194 38 L282 106 L126 143 Z M38 74 L38 226 L126 282 L126 143 M282 106 L282 228 L126 282 M194 38 L194 183 L282 228 M38 226 L194 183"/><path d="M91 105 L183 84 L235 124 L143 145 Z M91 105 L91 197 L143 230 L143 145 M235 124 L235 198 L143 230 M183 84 L183 173 L235 198 M91 197 L183 173 M38 74 L91 105 M194 38 L183 84 M282 106 L235 124 M126 143 L143 145 M38 226 L91 197 M194 183 L183 173 M282 228 L235 198 M126 282 L143 230"/></g></svg></div><OceanControls /></div><div class="hero-index">GRAPHICS RESEARCH <span>✳</span> GAME ENGINE <span>✳</span> GAME DEVELOPMENT</div></section><section class="section work" id="work"><div class="section-header work-intro"><h2 class="kicker">SELECTED WORK</h2></div><div class="work-groups">{groups.map((group) => {
   const items = projects.filter(project => project.data.group === group.id).sort((a,b) => a.data.groupOrder - b.data.groupOrder);
   return items.length > 0 && <section class:list={["work-group", `work-group--${group.id}`]} aria-labelledby={`group-${group.id}`}>
-    <div class="group-heading"><div><p class="kicker">{group.number} / {group.id === 'engineering' ? 'UNREAL ENGINE' : group.id === 'additional' ? 'MORE EXPLORATIONS' : group.id.toUpperCase()}</p><h3 id={`group-${group.id}`}>{group.title}<span>.</span></h3></div><p>{group.description}</p></div>
+    <div class="group-heading"><div><p class="kicker">{group.number} /</p><h3 id={`group-${group.id}`}>{group.title}<span>.</span></h3></div><p>{group.description}</p></div>
     <div class="work-grid">{items.map((project) => <article class="work-card">
-      {group.id !== 'additional' && <a class="work-card-image" href={`${base}projects/${project.id}/`} aria-label={`Explore ${project.data.title}`}><img src={`${base}${project.data.previewCover ?? (group.id === 'game' && project.data.heroCover ? project.data.heroCover : project.data.cover)}`} alt={project.data.previewCover ? (project.data.previewCoverAlt ?? project.data.coverAlt) : (group.id === 'game' && project.data.heroAlt ? project.data.heroAlt : project.data.coverAlt)} loading="lazy"/>{project.data.previewVideo && <video class="work-card-preview" data-preview-src={`${base}${project.data.previewVideo}`} muted loop playsinline preload="none" aria-hidden="true"></video>}</a>}
-      <div class="work-card-body"><div class="work-card-meta"><span>{group.id === 'engineering' ? 'UNREAL ENGINE · WORK IN PROGRESS' : group.id === 'game' ? 'TEAM PROJECT · TECHNICAL ART INTERN' : group.id === 'additional' ? 'COURSEWORK · REAL-TIME GRAPHICS' : project.data.category}</span><span>{project.data.period}</span></div>
+      <a class="work-card-image" href={`${base}projects/${project.id}/`} aria-label={`Explore ${project.data.title}`}><img src={`${base}${project.data.previewCover ?? (group.id === 'game' && project.data.heroCover ? project.data.heroCover : project.data.cover)}`} alt={project.data.previewCover ? (project.data.previewCoverAlt ?? project.data.coverAlt) : (group.id === 'game' && project.data.heroAlt ? project.data.heroAlt : project.data.coverAlt)} loading="lazy"/>{project.data.previewVideo && <video class="work-card-preview" data-preview-src={`${base}${project.data.previewVideo}`} muted loop playsinline preload="none" aria-hidden="true"></video>}</a>
+      <div class="work-card-body"><div class="work-card-meta"><span>{group.id === 'engineering' ? 'UNREAL ENGINE · WORK IN PROGRESS' : group.id === 'game' ? 'TEAM PROJECT · TECHNICAL ART INTERN' : project.data.category}</span><span>{project.data.period}</span></div>
         <h4><a href={`${base}projects/${project.id}/`}>{project.data.title}</a></h4><p>{project.data.summary}</p>
         <div class="work-card-footer"><span>{project.data.role}</span><div class="work-card-links">{project.data.paperUrl && <a class="paper-link" href={project.data.paperUrl}>Published paper ↗</a>}<a href={`${base}projects/${project.id}/`}>Explore ↗</a></div></div>
       </div>
     </article>)}</div>
   </section>;
-})}</div></section><section class="about section" id="about"><div><p class="kicker">ABOUT</p><h2>Creating a future<br/><em>we all dream of.</em></h2></div><div><p>I’m Zhenkai, a computer graphics enthusiast and game engine developer. My dream is to create the next generation of rendering and interactive experiences.</p><p>I earned a B.Eng. in Information Security from Shanghai Jiao Tong University. My experience spans graphics research, technical art for games, and engineering work including cloud rendering.</p><p class="skills">C++ / Python / Unreal Engine / OpenGL / WebGL / Vulkan / DirectX 12 / Unity</p><div class="about-links"><a href="mailto:nicozhongzk@gmail.com">nicozhongzk@gmail.com ↗</a><a href="https://github.com/FrostDawnNico">GitHub ↗</a></div></div></section><p class="seascape-credit">Ocean: <a href="https://www.shadertoy.com/view/Ms2SD1">Seascape</a> by Alexander Alekseev (TDM), 2014 · Adapted for this site · <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/">CC BY-NC-SA 3.0</a> · <a href="https://github.com/FrostDawnNico/portfolio/blob/main/src/seascape.glsl">Modified shader source</a></p></Base>
+})}</div></section><section class="about section" id="about"><div><p class="kicker">ABOUT</p><div class="about-life"><img src={`${base}images/about/life.webp`} alt="Zhenkai Zhong outdoors in a mountain landscape" width="1100" height="1467" loading="lazy" /></div></div><div><h2>Creating a future<br/><em>we all dream of<span>.</span></em></h2><p>I’m Zhenkai, a computer graphics enthusiast and game engine developer. My dream is to create the next generation of rendering and interactive experiences.</p><p>I earned a B.Eng. in Information Security from Shanghai Jiao Tong University. My experience spans graphics research, technical art for games, and engineering work including cloud rendering.</p><p class="skills">C++ / Python / Unreal Engine / OpenGL / WebGL / Vulkan / DirectX 12 / Unity</p><div class="about-links"><a href="mailto:nicozhongzk@gmail.com">nicozhongzk@gmail.com ↗</a><a href="https://github.com/FrostDawnNico">GitHub ↗</a></div></div></section><p class="seascape-credit">Ocean: <a href="https://www.shadertoy.com/view/Ms2SD1">Seascape</a> by Alexander Alekseev (TDM), 2014 · Adapted for this site · <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/">CC BY-NC-SA 3.0</a> · <a href="https://github.com/FrostDawnNico/portfolio/blob/main/src/seascape.glsl">Modified shader source</a></p></Base>
 <script>
+import { readThemeRgb } from '../scripts/theme';
 const canvas = document.querySelector('#light-field');
 const control = document.querySelector('.hypercube-control');
 if (canvas instanceof HTMLCanvasElement && control instanceof HTMLElement) {
   const ctx = canvas.getContext('2d');
   if (ctx) {
+    const cubeLine = readThemeRgb('--cube-line').join(', ');
+    const cubePoint = readThemeRgb('--cube-point').join(', ');
+    const cubeAccent = readThemeRgb('--lemon-bright').join(', ');
     const points: number[][] = Array.from({length: 16}, (_, i) => [0,1,2,3].map(bit => (i & (1 << bit)) ? 1 : -1));
     const edges: Array<[number, number, number]> = [];
     for (let i = 0; i < 16; i++) for (let axis = 0; axis < 4; axis++) {
@@ -40,7 +44,7 @@ if (canvas instanceof HTMLCanvasElement && control instanceof HTMLElement) {
     const reduced = matchMedia('(prefers-reduced-motion: reduce)');
     let width = 0, height = 0, frame = 0, visible = true;
     let yaw = .48, pitch = -.35, phase = .35, lastTime = 0;
-    let dragging = false, lastX = 0, lastY = 0;
+    let dragging = false, lastX = 0, lastY = 0, resumeAfter = 0;
     const rotate = (a: number, b: number, angle: number) => [a * Math.cos(angle) - b * Math.sin(angle), a * Math.sin(angle) + b * Math.cos(angle)];
     const resize = () => {
       const scale = Math.min(devicePixelRatio || 1, 2);
@@ -67,20 +71,20 @@ if (canvas instanceof HTMLCanvasElement && control instanceof HTMLElement) {
       for (const edge of ordered) {
         const depth = Math.max(0, Math.min(1, ((edge.a.z + edge.b.z) / 2 + 2) / 4));
         ctx.beginPath(); ctx.moveTo(edge.a.x,edge.a.y); ctx.lineTo(edge.b.x,edge.b.y);
-        ctx.strokeStyle = edge.axis === 3 ? `rgba(185, 151, 45, ${.30 + depth*.35})` : `rgba(37, 126, 112, ${.24 + depth*.46})`;
+        ctx.strokeStyle = edge.axis === 3 ? `rgba(${cubeAccent}, ${.55 + depth*.35})` : `rgba(${cubeLine}, ${.32 + depth*.45})`;
         ctx.lineWidth = .85 + depth*.75; ctx.stroke();
       }
       for (const p of projected) {
-        ctx.beginPath(); ctx.arc(p.x,p.y,2.1,0,Math.PI*2); ctx.fillStyle = 'rgba(48, 133, 109, .72)'; ctx.fill();
+        ctx.beginPath(); ctx.arc(p.x,p.y,2.1,0,Math.PI*2); ctx.fillStyle = `rgba(${cubePoint}, .8)`; ctx.fill();
       }
     };
     const tick = (time: number) => {
       frame = 0;
-      if (!visible || reduced.matches) {lastTime = 0; return;}
-      if (lastTime) {const dt = Math.min((time-lastTime)/1000,.05); phase += dt*.23; if (!dragging) yaw += dt*.10;}
+      if (!visible || document.hidden || reduced.matches) {lastTime = 0; return;}
+      if (lastTime && !dragging && time >= resumeAfter) {const dt = Math.min((time-lastTime)/1000,.05); phase += dt*.12; yaw += dt*.055;}
       lastTime = time; render(); frame = requestAnimationFrame(tick);
     };
-    const start = () => {if (!frame && visible && !reduced.matches) frame = requestAnimationFrame(tick);};
+    const start = () => {if (!frame && visible && !document.hidden && !reduced.matches) frame = requestAnimationFrame(tick);};
     control.addEventListener('pointerdown', event => {
       if (event.button !== 0) return;
       dragging = true; lastX = event.clientX; lastY = event.clientY; control.setPointerCapture(event.pointerId); control.classList.add('dragging');
@@ -90,14 +94,15 @@ if (canvas instanceof HTMLCanvasElement && control instanceof HTMLElement) {
       yaw += (event.clientX-lastX)*.01; pitch += (event.clientY-lastY)*.01;
       lastX = event.clientX; lastY = event.clientY; render();
     });
-    const stop = () => {dragging = false; control.classList.remove('dragging');};
+    const stop = () => {if (dragging) resumeAfter = performance.now() + 1200; dragging = false; control.classList.remove('dragging');};
     control.addEventListener('pointerup', stop); control.addEventListener('pointercancel', stop); control.addEventListener('lostpointercapture', stop);
     control.addEventListener('keydown', event => {
       const moves: Record<string,[number,number]> = {ArrowLeft:[-.15,0],ArrowRight:[.15,0],ArrowUp:[0,-.15],ArrowDown:[0,.15]};
-      if (moves[event.key]) {event.preventDefault(); yaw += moves[event.key][0]; pitch += moves[event.key][1]; render();}
+      if (moves[event.key]) {event.preventDefault(); yaw += moves[event.key][0]; pitch += moves[event.key][1]; resumeAfter = performance.now() + 1200; render();}
     });
     const observer = new IntersectionObserver(entries => {visible = entries[0].isIntersecting; if (!visible) {cancelAnimationFrame(frame); frame = 0; lastTime = 0;} else start();});
     reduced.addEventListener('change', () => {cancelAnimationFrame(frame); frame = 0; lastTime = 0; render(); start();});
+    document.addEventListener('visibilitychange', () => {if (document.hidden) {cancelAnimationFrame(frame); frame = 0; lastTime = 0;} else start();});
     window.addEventListener('resize', resize); resize(); control.classList.add('active'); observer.observe(control); start();
   }
 }
@@ -106,25 +111,31 @@ if (canvas instanceof HTMLCanvasElement && control instanceof HTMLElement) {
 
 <script>
 const motionPreference = matchMedia('(prefers-reduced-motion: reduce)');
-const hoverCapability = matchMedia('(hover: hover)');
 for (const preview of document.querySelectorAll<HTMLVideoElement>('.work-card-preview')) {
   const link = preview.closest<HTMLAnchorElement>('.work-card-image');
   if (!link) continue;
-  let hovered = false, focused = false, request = 0;
-  const stop = () => { request++; preview.pause(); preview.currentTime = 0; link.classList.remove('preview-playing'); };
+  let visible = false, request = 0;
+  const shouldPlay = () => visible && !document.hidden && !motionPreference.matches;
   const updatePreview = () => {
-    if (motionPreference.matches || !hoverCapability.matches || document.hidden || (!hovered && !focused)) { stop(); return; }
     const current = ++request;
+    if (!shouldPlay()) {
+      preview.pause();
+      link.classList.remove('preview-playing');
+      return;
+    }
     if (!preview.src && preview.dataset.previewSrc) preview.src = preview.dataset.previewSrc;
-    preview.play().then(() => { if (current === request) link.classList.add('preview-playing'); else if (motionPreference.matches || !hoverCapability.matches || document.hidden || (!hovered && !focused)) preview.pause(); }).catch(() => { if (current === request) link.classList.remove('preview-playing'); });
+    preview.play().then(() => {
+      if (current === request && shouldPlay()) link.classList.add('preview-playing');
+      else if (!shouldPlay()) preview.pause();
+    }).catch(() => { if (current === request) link.classList.remove('preview-playing'); });
   };
-  link.addEventListener('mouseenter', () => { hovered = true; updatePreview(); });
-  link.addEventListener('mouseleave', () => { hovered = false; updatePreview(); });
-  link.addEventListener('focus', () => { focused = true; updatePreview(); });
-  link.addEventListener('blur', () => { focused = false; updatePreview(); });
-  preview.addEventListener('error', () => { link.classList.remove('preview-playing'); });
+  const observer = new IntersectionObserver(entries => {
+    visible = entries[0].isIntersecting;
+    updatePreview();
+  }, {threshold: .15});
+  observer.observe(link);
+  preview.addEventListener('error', () => { request++; link.classList.remove('preview-playing'); });
   motionPreference.addEventListener('change', updatePreview);
-  hoverCapability.addEventListener('change', updatePreview);
   document.addEventListener('visibilitychange', updatePreview);
 }
 </script>

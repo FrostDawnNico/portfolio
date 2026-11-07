@@ -158,13 +158,11 @@ nav a:hover, .about-links a:hover, .prose a:hover, .back:hover, .home .seascape-
  .work-card h4 { font-size:36px; }
 }
 
-/* A concise introduction brings the first project into view sooner. */
-.home .work { padding-top:40px; }
+/* The section uses the same outer spacing as About. */
 .work-intro { margin-bottom:20px; }
 .section .work-intro h2 { margin:0; }
 .work-group--research { padding-top:28px; }
 @media(max-width:760px) {
- .home .work { padding-top:32px; }
  .work-intro { margin-bottom:16px; }
  .work-group--research { padding-top:24px; }
 }

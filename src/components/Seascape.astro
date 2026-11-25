@@ -72,9 +72,23 @@ if (canvas) {
         const update = () => { cancelAnimationFrame(frame); frame = 0; last = 0; if (!lost) { render(); if (!reduced.matches && !document.hidden) frame = requestAnimationFrame(tick); } };
         controls.forEach(input => {
           input.addEventListener('input', () => { const key = input.dataset.oceanControl; if (key) state[key] = Number(input.value); reflect(input); if (!lost) render(); });
-          let startY = 0, startValue = 0;
-          input.addEventListener('pointerdown', event => { if (event.button !== 0 || input.disabled) return; event.preventDefault(); input.focus(); startY = event.clientY; startValue = Number(input.value); input.setPointerCapture(event.pointerId); });
-          input.addEventListener('pointermove', event => { if (!input.hasPointerCapture(event.pointerId)) return; const min = Number(input.min), max = Number(input.max), step = Number(input.step); const raw = startValue + (startY-event.clientY)*(max-min)/140; input.value = String(Math.min(max, Math.max(min, min + Math.round((raw-min)/step)*step))); input.dispatchEvent(new Event('input', {bubbles:true})); });
+          let startX = 0, startValue = 0;
+          input.addEventListener('pointerdown', event => {
+            if (!event.isPrimary || event.button !== 0 || input.disabled) return;
+            event.preventDefault();
+            input.focus({preventScroll:true});
+            startX = event.clientX;
+            startValue = Number(input.value);
+            input.setPointerCapture(event.pointerId);
+          });
+          input.addEventListener('pointermove', event => {
+            if (!event.isPrimary || !input.hasPointerCapture(event.pointerId)) return;
+            const min = Number(input.min), max = Number(input.max), step = Number(input.step);
+            const raw = startValue + (event.clientX-startX)*(max-min)/140;
+            const previous = input.value;
+            input.value = String(Math.min(max, Math.max(min, min + Math.round((raw-min)/step)*step)));
+            if (input.value !== previous) input.dispatchEvent(new Event('input', {bubbles:true}));
+          });
         });
         reset?.addEventListener('click', () => { controls.forEach(input => { const key = input.dataset.oceanControl; if (key) { state[key] = defaults[key]; input.value = String(defaults[key]); reflect(input); } }); if (!lost) render(); });
         canvas.addEventListener('webglcontextlost', event => { event.preventDefault(); lost = true; cancelAnimationFrame(frame); canvas.classList.remove('ready'); setAvailable(false); });

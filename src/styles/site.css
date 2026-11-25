@@ -867,7 +867,7 @@ a:focus-visible {
   align-items: center;
   min-width: 0;
   gap: 6px;
-  cursor: ns-resize;
+  cursor: ew-resize;
 }
 .dial-face {
   position: relative;
@@ -905,8 +905,8 @@ a:focus-visible {
   height: 100%;
   margin: 0;
   opacity: 0;
-  cursor: ns-resize;
-  touch-action: none;
+  cursor: inherit;
+  touch-action: pan-y;
 }
 .dial-label {
   font-size: 8px;
